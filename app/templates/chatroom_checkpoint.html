@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <script src="{{url_for('static', filename='chatroom_checkpoint.js')}}"></script>
+    <div class="heading mb-4">
+        <h1 class="display-4">Set your mic and videocam state</h1>        
+        <h4>You are about to join room: <span class="heading-mark">{{room_id}}</span></h4>
+    </div>
+
+    <div class="container text-center mt-5">
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6 col-lg-offset-3">
+                <div id="permission_alert" class="alert alert-danger" role="alert" style="display: none; background-color: rgb(255, 130, 130); color: rgb(153, 32, 32);">
+                    <strong>Please allow camera and mic permissions!</strong> 
+                </div>                
+                <div class="shadow p-0">
+                    <div class="vid-wrapper" style="width: 100%; background-color: rgb(20,20,20);">
+                        <video id="local_vid" autoplay muted style="max-height: 400px; max-width: 100%;"></video>
+                    </div>
+                    <div>
+                        <button id="bttn_mute" class="btn btn-success">
+                            <span id="mute_icon">
+                                mic
+                            </span>
+                        </button>
+                        <button id="bttn_vid_mute"class="btn btn-success">
+                            <span id="vid_mute_icon">
+                                videocam
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                <form method="POST" onsubmit="return validate()" class="form shadow" style="max-width:400px; margin-left: auto; margin-right: auto;">
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <input type="submit" value="Join" class="btn btn-primary">                            
+                        </div>
+                    </div>
+                    <input type="hidden" value="0" name="mute_audio" id="mute_audio_inp">
+                    <input type="hidden" value="0" name="mute_video" id="mute_video_inp">
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

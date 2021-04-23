@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="inviteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        Enter email to invite others.
+                    </h4>
+                </div>
+                <form method="POST" onsubmit="return validate()" class="form shadow">
+                    <div class="modal-body">
+                        <input type="text" name="emailgetter" id="emailgetter" class="form-control" placeholder="Email" autofocus required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <input type="submit" value="Invite" class="btn btn-success">                           
+                    </div>
+                    <input type="hidden" value="nullroomid" name="roomidform" id="roomidform">
+                </form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+
+
+    <table id="indexTable" class="table table-hover">    
+        <tr valign="top">
+            <td>
+                <table id="meetingTable2" class="table table-hover">
+                    <caption>
+                        My meetings
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th>Sponsor's email</th>
+                            <th>Introduction</th>
+                            <th>Start time</th>
+                            <th></th>
+                            <th>Roomid</th>
+                            <th>Share</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for meeting in accept_meetings %}
+                        <tr valign="middle">
+                            <td style="vertical-align: middle"><img src="{{ meeting.is_sponsor.avatar(30) }}">
+                                {% if meeting.sponsor == user.id %}
+                                Myself
+                                {% else %}
+                                {{ emailmap[meeting.sponsor] }}
+                                {% endif %}
+                            </td>
+                            <td style="vertical-align: middle">{{ meeting.introduction }}</td>
+                            <td style="vertical-align: middle" class="col-md-2">
+                                {{ moment(meeting.start_time).format('YYYY-MM-DD dddd HH:mm') }} 
+                            </td>
+                            <td style="vertical-align: middle" class="col-md-1">{{ moment(meeting.start_time).fromNow(refresh=True) }}</td>
+                            <td style="vertical-align: middle">{{ meeting.roomid }}</td>
+                            {% if meeting.state == "Present" %}
+                            <td style="vertical-align: middle">
+                                Link
+                            </td>
+
+                            <script type="text/javascript">
+                                function setInputValue(rid) {
+                                    var rf = document.getElementById("roomidform");
+                                    rf.value = rid;
+                                }
+                            </script>
+
+                            <td style="vertical-align: middle">
+                                <a href="{{ url_for('entry_checkpoint', room_id=meeting.roomid, display_name=current_user.nickname) }}" class="btn btn-success" role="button">Go</a>
+                                <input type="submit" value="Invite" onclick="setInputValue('{{ meeting.roomid }}')" class="btn btn-primary" data-toggle="modal" data-target="#inviteModal">                            
+                            </td>
+                            {% elif meeting.state == "Coming" %}
+                            <td style="vertical-align: middle">Wait</td>
+                            <td style="vertical-align: middle">
+                                <input type="submit" value="Invite" onclick="setInputValue('{{ meeting.roomid }}')" class="btn btn-primary" data-toggle="modal" data-target="#inviteModal">                            
+                            </td>
+                            {% elif meeting.state == "End" %}
+                            <td style="vertical-align: middle">End</td>
+                            <td style="vertical-align: middle">End</td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <hr>
+    <table id="meetingTable1" class="table table-hover">
+        <caption>
+            Waiting for handling...
+        </caption>
+        <thead>
+            <tr>
+                <th>Sponsor's email</th>
+                <th>Introduction</th>
+                <th>Start time</th>
+                <th>End time</th>
+                <th>Roomid</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for meeting in schedule_meetings %}
+            <tr valign="center">
+                <td style="vertical-align: middle"><img src="{{ meeting.is_sponsor.avatar(30) }}"> {{ emailmap[meeting.sponsor] }}</td>
+                <td style="vertical-align: middle">{{ meeting.introduction }}</td>
+                <!-- <td style="vertical-align: middle">{{ meeting.start_time.strftime( '%Y-%m-%d %H:%M' ) }}</td> -->
+                <td style="vertical-align: middle">{{ moment(meeting.start_time).format('YYYY-MM-DD dddd HH:mm') }}</td>
+                <td style="vertical-align: middle">{{ moment(meeting.end_time).format('YYYY-MM-DD dddd HH:mm') }}</td>
+                <td style="vertical-align: middle">{{ meeting.roomid }}</td>
+                <td style="vertical-align: middle">
+                    <a href="/accept/{{ user.id }}/{{ meeting.roomid }}" class="btn btn-primary" role="button">Accept</a>
+                    <a href="/refuse/{{ user.id }}/{{ meeting.roomid }}" class="btn btn-danger" role="button">Refuse</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

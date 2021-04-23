@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+{% endblock %}
+
+{% block app_content %}
+    <h1>Schedule meeting</h1>
+    <div class="row">
+        <div class="col-md-4">
+            {{ wtf.quick_form(form, button_map={'submit':'primary'}) }}
+        </div>
+    </div>
+    <br>
+    <div>
+        <a href="{{ url_for('index') }}">Back to fast meeting</a>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+  <script type="text/javascript">
+    $(function () {
+        $('#stimepicker').datetimepicker({
+            format: 'YYYY-M-DD HH:mm dddd',
+            locale: moment.locale('zh-CN'),
+        });
+    });
+    $(function () {
+        $('#etimepicker').datetimepicker({
+            format: 'YYYY-M-DD HH:mm dddd',
+            locale: moment.locale('zh-CN'),
+        });    
+    });
+  </script>
+{% endblock %}
